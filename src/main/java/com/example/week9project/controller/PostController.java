@@ -1,41 +1,56 @@
 package com.example.week9project.controller;
 
-import com.example.week9project.dto.LoginDto;
 import com.example.week9project.dto.PostDto;
-import com.example.week9project.dto.RegistrationDto;
-import com.example.week9project.entity.Post;
 import com.example.week9project.repository.PostRepo;
 import com.example.week9project.service.PostServices;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/v2/post")
+@RequestMapping("/api/posts")
 public class PostController {
     private final PostRepo postRepo;
     private final PostServices postServices;
 
+    @Autowired
     public PostController(PostRepo postRepo, PostServices postServices) {
         this.postRepo = postRepo;
         this.postServices = postServices;
     }
 
     @DeleteMapping(path = "{id}")
-    public void deletePost (@PathVariable("id") Long postId){
-        postServices.deletePost(postId);
+    public ResponseEntity<String> deletePost (@PathVariable("id") Long postId){
+       return postServices.deletePost(postId);
     }
 
-    @PostMapping(value = "/create/{userId}")
-    public ResponseEntity<Post> createPost(@RequestBody PostDto postDto,@PathVariable Long userId){
-        return new ResponseEntity<>(postServices.createNewPost(userId, postDto), HttpStatus.CREATED);
+    @GetMapping
+    public ResponseEntity<List<PostDto>> getAllPosts(){
+        return postServices.getAllPosts();
     }
 
+    @PostMapping(value = "/create/{userId}/{categoryId}")
+    public ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto,@PathVariable Long userId, @PathVariable Long categoryId){
+        return postServices.createNewPost(userId, categoryId, postDto);
+    }
 
-//    @PostMapping(value = "/login")
-//    public ResponseEntity<String> login(@RequestBody LoginDto loginDto){
-//        return new ResponseEntity<String>(userServices.login(loginDto), HttpStatus.ACCEPTED);
-//    }
+    @PutMapping(path = "/{postId}/{userId}")
+    public ResponseEntity<PostDto> editPost(@RequestBody PostDto postDto, @PathVariable("postId") Long postId, @PathVariable("userId") Long userId){
+        return postServices.editPost(postId, userId, postDto);
+    }
+
+    @PostMapping(value = "likes/{userId}/{postId}")
+    public ResponseEntity<String> likePost(@PathVariable ("userId") Long userId, @PathVariable("postId") Long postId){
+        return postServices.likePost(userId, postId);
+    }
+
+    @DeleteMapping(path = "unlike/{userId}/{postId}")
+    public ResponseEntity<String> unlikePost(@PathVariable("userId") Long userId, @PathVariable("postId") Long postId){
+        return postServices.unlikePost(userId, postId);
+    }
+
 
 
 }

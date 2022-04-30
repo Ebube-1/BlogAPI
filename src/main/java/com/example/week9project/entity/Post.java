@@ -1,15 +1,13 @@
 package com.example.week9project.entity;
 
-import com.sun.istack.NotNull;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
-import java.sql.Time;
-import java.time.LocalDate;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.util.List;
 
-
+@RequiredArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @Entity
@@ -19,12 +17,15 @@ public class Post {
     private Long postId;
     private String title;
     private String body;
-    private String comments;
-    private int likes;
-    private Date datePosted;
-    private Time timePosted;
-
+    private long noOfLikes;
+    private LocalDateTime datePosted;
     @ManyToOne
     private User user;
+    @ManyToOne
+    private Category category;
+//    @OneToMany
+//    private List<Comment> comment;
+    private long noOfComments;
+
 
 }
